@@ -1,0 +1,30 @@
+body{
+    background: url("https://cache.desktopnexus.com/cropped-wallpapers/2076/2076028-1536x864-[DesktopNexus.com].jpg?st=YFuiGBvmB5g4xRMzBA6llA&e=1600122034")
+  no-repeat center center/cover;
+}
+
+#textarea{
+    display:block;
+    margin: auto;
+    background-color: rgba(0, 0,0, 0.5);
+    border-color: whitesmoke;
+    color: whitesmoke;
+}
+
+table{
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: auto;
+}
+
+h1{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.goback{
+    text-decoration: none;
+    border: 1px solid whitesmoke;
+    padding: 10px;
+    margin-top: 10px;
+    color: whitesmoke;
+}
