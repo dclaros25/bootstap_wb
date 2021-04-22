@@ -1,0 +1,14 @@
+/*!
+ * Start Bootstrap - Business Frontpage (https://startbootstrap.com/templates/business-frontpage)
+ * Copyright 2013-2020 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-business-frontpage/blob/master/LICENSE)
+ */
+body {
+  padding-top: 56px;
+}
+
+.header_background  {
+  background: url("https://cache.desktopnexus.com/cropped-wallpapers/2076/2076028-1536x864-[DesktopNexus.com].jpg?st=YFuiGBvmB5g4xRMzBA6llA&e=1600122034")
+  no-repeat center center/cover;
+  height: 85vh;
+}
