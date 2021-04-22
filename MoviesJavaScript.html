@@ -1,0 +1,103 @@
+<html>
+<head>
+<link rel="icon" type="image/png" href="https://media.tenor.com/images/2eedbb4ce093ff05a23b23b0e078ac36/tenor.gif" />
+<link rel="stylesheet" href="css/Movies.css">
+<title>Nick AWS Movies Site</title>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+
+<script type="text/javascript">
+AWS.config.update({
+  region: "us-east-2",
+  // The endpoint should point to the local or remote computer where DynamoDB (downloadable) is running.
+  endpoint: 'dynamodb.us-east-2.amazonaws.com',
+  /*
+    accessKeyId and secretAccessKey defaults can be used while using the downloadable version of DynamoDB. 
+    For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
+  */
+  accessKeyId: "AKIATR2F6TKA5NAHBFNP",
+  secretAccessKey: "S02Amxzp6D6KOJMexr2TgUxq80/xPQOdCsap7bNB"
+});
+
+  /* 
+     Uncomment the following code to configure Amazon Cognito and make sure to 
+     remove the endpoint, accessKeyId and secretAccessKey specified in the code above. 
+     Make sure Cognito is available in the DynamoDB web service region (specified above).
+     Finally, modify the IdentityPoolId and the RoleArn with your own.
+  */
+/*
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+IdentityPoolId: "us-west-2:12345678-1ab2-123a-1234-a12345ab12",
+RoleArn: "arn:aws:iam::123456789012:role/dynamocognito"
+});
+*/
+
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+
+function listMovies() {
+    var params = {};
+    dynamodb.listTables(params, function(err, data) {
+    if (err){
+        document.getElementById('textarea').innerHTML = "Unable to list tables: " + "\n" + JSON.stringify(err, undefined, 2);
+    }
+    else{
+     document.getElementById('textarea').innerHTML = "List of tables: " + "\n" + JSON.stringify(data, undefined, 2);
+    }
+});
+}
+
+const movieList=[1988, 2001, 2004, 2008, 2016, 2019];
+
+function queryData() {
+    document.getElementById('textarea').innerHTML = "";
+    document.getElementById('textarea').innerHTML += "Querying for movies..." + "\n";
+
+    for(let i = 0; i < movieList.length; i++)
+    { 
+        var params = {
+            TableName : "Movies",
+            KeyConditionExpression: "#yr = :yyyy",
+            ExpressionAttributeNames:{
+                "#yr": "year"
+            },
+            ExpressionAttributeValues: {
+                ":yyyy":movieList[i]
+            }
+        };
+
+        docClient.query(params, function(err, data) {
+            if (err) {
+                document.getElementById('textarea').innerHTML += "Unable to query. Error: " + "\n" + JSON.stringify(err, undefined, 2);
+            } else {
+                data.Items.forEach(function(movie) {
+                    document.getElementById('textarea').innerHTML += "\n" + movie.year + ": " + movie.title;
+                });
+            
+            }
+        });
+    }
+}
+
+</script>
+</head>
+
+<body>
+    <h1><a class = "goback" href="index.html">Back to Website Page</a></h1>
+<table border = 1>
+    <td>
+        <table border = 1>
+        <td><input id="listTablebutton" type="button" value="List Tables" onclick="listMovies();" /></td>
+        </table>
+    </td>
+    <td>
+        <table border = 1>
+            <td><input id="queryData" type="button" value="Query" onclick="queryData();" /></td>
+        </table>
+    </td>
+</table>
+
+<br>
+<textarea readonly id= "textarea" style="width:400px; height:400px"></textarea>
+
+</body>
+</html>

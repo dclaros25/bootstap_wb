@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<title>Nick AWS Parking Site</title>
+<link rel="icon" type="image/png" href="https://media.tenor.com/images/2eedbb4ce093ff05a23b23b0e078ac36/tenor.gif" />
+<link rel="stylesheet" href="css/parking.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <br>
+    <div class="box">
+        <h1 class="titling">Available Parking</h1>
+        <br>
+        <input id="lot" class="choice" placeholder="Parking Lot #">
+        <br>
+        <input id="spot" class="choice" placeholder="# of Available Spots">
+        <br>
+        <div class="newbox">
+            <button id="update" class="btn btn-outline-success boxcolor">Update</button>
+            <a class = "btn btn-outline-success boxcolor" href="https://4x51ttg23a.execute-api.us-east-2.amazonaws.com/nguyen/parking?lot=1">Check Lot</a>
+            <a class = "btn btn-outline-success boxcolor" href="index.html">Back to Website Page</a>
+        </div>
+    </div>
+    <div id="messages">
+    </div>
+</div>
+</body>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+<script>
+    AWS.config.update({
+    region: "us-east-2",
+    // The endpoint should point to the local or remote computer where DynamoDB (downloadable) is running.
+    endpoint: "dynamodb.us-east-2.amazonaws.com",
+    /*
+    accessKeyId and secretAccessKey defaults can be used while using the downloadable version of DynamoDB.
+    For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
+    */
+    accessKeyId: "AKIAJBASOWL3CTYAOSWQ",
+    secretAccessKey: "Mh2JLL3U5410Dxgc6HuYUXZGCpxtlLtSs3bsNgrZ",
+});
+
+const dynamodb = new AWS.DynamoDB();
+const docClient = new AWS.DynamoDB.DocumentClient();
+
+document.querySelector("#update").addEventListener("click", () => updater());
+
+async function updater()
+{
+    let whichlot = document.querySelector("#lot");
+    let thisSpot = document.querySelector("#spot");
+
+    whichlot = parseInt(whichlot.value);
+    thisSpot = parseInt(thisSpot.value);
+
+    const arr = [];
+    const params = {
+        TableName: "UNTLots",
+    };
+
+    let turtle = docClient.scan(params).promise();
+    await turtle.then((data) => {
+        data.Items.forEach(function (lot) {
+            arr.push(lot);
+        });
+    });
+
+    arr.find(function (lots) {
+        console.log(lots);
+        if (lots.lot === whichlot) {
+            const params1 = {
+                TableName: "UNTLots",
+                Key: {
+                    lot: lots.lot,
+                    spots: lots.spots
+                },
+            };
+            docClient.delete(params1).promise();
+
+            const params2 = {
+                TableName: "UNTLots",
+                Item: {
+                    lot: whichlot,
+                    spots: thisSpot,
+                },
+            };
+            docClient.put(params2).promise();
+        }
+    });
+};
+</script>
+</html>
